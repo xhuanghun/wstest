@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="js/jquery-1.12.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+var c=document.getElementById("myCanvas");
+var cxt=c.getContext("2d");
+var img=new Image();
+img.src="2.gif";
+cxt.drawImage(img,0,0);
+//console.dir(cxt);
+var imgdata=c.toDataURL(); 
+console.dir(imgdata);
+});
+</script>
+</head>
+<body>
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+
+</body>
+</html>

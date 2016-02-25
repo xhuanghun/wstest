@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>添加溫度</title>
+<script src="js/jquery-1.12.0.js"></script>
+<script>
+	$(document).ready(function(){
+		$("#add").click(function(){
+			var ws = new WebSocket("ws://localhost:8080/wstest/temperature/node1");
+			ws.onopen = function()
+			{	
+				 var temper=$("#temperature").val();
+				  console.log("open");
+				  ws.send("2016/02/01 12:22:22:001")
+				  ws.send(temper);
+			};
+				ws.onmessage = function(evt)
+				{
+				  console.log(evt.data)
+				};
+				ws.onclose = function(evt)
+				{
+				  console.log("WebSocketClosed!");
+				};
+				ws.onerror = function(evt)
+				{
+				  console.log("WebSocketError!");
+				};
+		});
+	});
+</script>
+</head>
+<body>
+<input type="text" name="temperature" id="temperature"/>
+<input type="button" name="add" id="add"/>
+</body>
+</html>
