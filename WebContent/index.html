@@ -42,6 +42,7 @@ $(document).ready(function(){
     	  
     	  $("#"+panelId+" "+".msgSuccess").show().find("span").text(infoMsg);
       }
+      try{
       if(navigator.getMedia){
 	  navigator.getMedia({video: true},
 			  function(stream){
@@ -57,6 +58,12 @@ $(document).ready(function(){
       else{
     	  errorShow("imagePanel","摄像头捕获失败");
       }
+      }
+      catch(e)
+      {
+    	  $("#imagePanel .sendBtn").attr("disable",true);
+    	  errorShow("imagePanel","摄像头捕获失败");
+      }
       
       
 
@@ -64,11 +71,10 @@ $(document).ready(function(){
 	      var imageWebSocket=null;
 	      var temperatureWebSocket=null;
 	      var smokeWebSocket=null;
-	  //    var wsServer="ws://www.cjtblog.cn:8080/wstest/";
-	      var wsServer="ws://localhost:8080/wstest/";
+	     var wsServer="ws://www.cjtblog.cn:8080/wstest/";
+	     // var wsServer="ws://localhost:8080/wstest/";
 	      //获取图片并通过WebSocket发送          
 	     $("#imagePanel .sendBtn").click(function () {
-	    	 infoShow("imagePanel","连接打开1");
 	      $(this).attr("disabled",true);
 		  var width=$("#webcam").css("width");
 		  var height=$("#webcam").css("height");
@@ -77,9 +83,8 @@ $(document).ready(function(){
 	   	  var canvas = $("#canvas")[0]; 
 		  var context=canvas.getContext("2d");
 	      context.drawImage($("#webcam")[0],0,0, $("#canvas").width(), $("#canvas").height());
-	      infoShow("imagePanel","连接打开2");
 	        var blob2=canvas.toBlob(function(b){
-	        	infoShow("imagePanel","连接打开4");
+	
 	    	   var sendDate=new Date();
 	    	   var sendDateStr=toFomatorString(sendDate,"yyyy/mm/dd hh:mi:ss:si");
 	    	   	   if(imageWebSocket==null||imageWebSocket.readyState==WebSocket.CLOSED){
