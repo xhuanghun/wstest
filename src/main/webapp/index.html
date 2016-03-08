@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<link href="css/bootstrap.css" rel="stylesheet" />
+<!-- [if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="js/jquery-1.12.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/util.js"></script>
+<script src="js/Blob.js"></script>
+<script>
+$(document).ready(function(){
+	// 解决谷歌浏览器对canvas.toBlob的不支持
+	  if (!HTMLCanvasElement.prototype.toBlob) {
+		  Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+		   value: function (callback, type, quality) {
+
+		     var binStr = atob( this.toDataURL(type, quality).split(',')[1] ),
+		         len = binStr.length,
+		         arr = new Uint8Array(len);
+
+		     for (var i=0; i<len; i++ ) {
+		      arr[i] = binStr.charCodeAt(i);
+		     }
+
+		     callback( new Blob( [arr], {type: type || 'image/png'} ) );
+		   }
+		  });
+		 }
+      navigator.getMedia = (navigator.getUserMedia||navigator.webkitGetUserMedia ||navigator.mozGetUserMedia ||
+     						navigator.msGetUserMedia);
+      function errorShow(panelId, errorMsg){
+    	  $("#"+panelId+" "+".msgError").show().find("span").text(errorMsg);
+      }
+      function infoShow(panelId,infoMsg){
+    	  
+    	  $("#"+panelId+" "+".msgSuccess").show().find("span").text(infoMsg);
+      }
+      try{
+      if(navigator.getMedia){
+	  navigator.getMedia({video: true},
+			  function(stream){
+		  		var webcam=$("#webcam")[0];
+		   		if(window.URL){
+			   		webcam.src = window.URL.createObjectURL(stream);
+		    	} else {
+		    		webcam.src = stream;
+		    	}
+		   		webcam.play();
+	         }, function(error){$("#imagePanel .sendBtn").attr("disable",true);errorShow("imagePanel","摄像头捕获失败!")});           
+      }
+      else{
+    	  errorShow("imagePanel","摄像头捕获失败");
+      }
+      }
+      catch(e)
+      {
+    	  $("#imagePanel .sendBtn").attr("disable",true);
+    	  errorShow("imagePanel","摄像头捕获失败");
+      }
+      
+      
+
+      
+	      var imageWebSocket=null;
+	      var temperatureWebSocket=null;
+	      var smokeWebSocket=null;
+	     var wsServer="ws://www.cjtblog.cn:8080/wstest/";
+	     // var wsServer="ws://localhost:8080/wstest/";
+	      //获取图片并通过WebSocket发送          
+	     $("#imagePanel .sendBtn").click(function () {
+	      $(this).attr("disabled",true);
+		  var width=$("#webcam").css("width");
+		  var height=$("#webcam").css("height");
+		  $("#canvas").attr("width",width).attr("height",height);
+		  $("#canvas").css("width",width).css("height",height);
+	   	  var canvas = $("#canvas")[0]; 
+		  var context=canvas.getContext("2d");
+	      context.drawImage($("#webcam")[0],0,0, $("#canvas").width(), $("#canvas").height());
+	        var blob2=canvas.toBlob(function(b){
+	
+	    	   var sendDate=new Date();
+	    	   var sendDateStr=toFomatorString(sendDate,"yyyy/mm/dd hh:mi:ss:si");
+	    	   	   if(imageWebSocket==null||imageWebSocket.readyState==WebSocket.CLOSED){
+	    	   		   var nodeName=$("#imageNodeName").val();
+	    	   		   imageWebSocket=new WebSocket(wsServer+"image/"+nodeName);
+
+		        	   imageWebSocket.onopen = function()
+		      			{
+		      				  infoShow("imagePanel","连接打开");
+		      				  imageWebSocket.send(sendDateStr)
+		      				  imageWebSocket.send(b);
+		      				$("#imagePanel .closeBtn").attr("disabled",false);
+		      		    	$("#imagePanel .sendBtn").attr("disabled",false);
+		      			};
+		      			imageWebSocket.onmessage = function(evt)
+		      				{
+		      				  infoShow("imagePanel",evt.data)
+		      				};
+		      				imageWebSocket.onclose = function(evt)
+		      				{
+		      				  infoShow("imagePanel","连接关闭!");
+		      				$(this).parent().find(".closeBtn").attr("disabled",true);
+			      		     $(this).attr("disabled",false);
+		      				};
+		      				imageWebSocket.onerror = function(evt)
+		      				{
+		      				  errorShow("imagePanel","连接出错!");
+		      				$("#imagePanel .closeBtn").attr("disabled",true);
+		      				$("#imagePanel .sendBtn").attr("disabled",false);
+		      				};
+	    	   	   }
+	    	   	   else{
+	      				  imageWebSocket.send(sendDateStr);
+	      				  imageWebSocket.send(b);
+	      				$("#imagePanel .closeBtn").attr("disabled",false);
+	      				$("#imagePanel .sendBtn").attr("disabled",false);
+	    	   	   }
+	         },"image/jpeg", 0.95);	   
+	    });
+	      
+	     $("#temperaturePanel .sendBtn,#smokePanel .sendBtn").click(function () {
+	    	 var ws=null;
+	    	 var panelId=null;
+	    	 var value=null;
+		      $(this).attr("disabled",true);
+		    	 var sensor=$(this).parent().find("input[type=hidden]").val();
+		    	 console.log("sensor="+sensor);
+		    	 var ws=null;
+		     if(sensor=="temperature"){
+		    		 ws=temperatureWebSocket;
+		    		 panelId="temperaturePanel";
+		    		 console.log(panelId);
+		    		 value=$(this).parent().find("input[type=text]");
+		    	 }
+		    	 else if(sensor=="smoke"){
+		    		 ws=smokeWebSocket;
+		    		 panelId="smokePanel";
+		    		 value=$(this).parent().find("input[type=text]");
+		    	 }
+		    	 else{
+		    		 errorShow("temperaturePanel","初始化错误"+sensor);
+		    		 errorShow("smokePanel","初始化错误"+sensor);
+		    	 }
+		    	   var sendDate=new Date();
+		    	   var sendDateStr=toFomatorString(sendDate,"yyyy/mm/dd hh:mi:ss:si");
+		    	   	   if(ws==null||ws.readyState==WebSocket.CLOSED){
+		    	   		   var nodeName=$(this).parent().find("select").val();
+		    	   		 if(sensor=="temperature"){
+		    	   			
+				    		 ws=new WebSocket(wsServer+sensor+"/"+nodeName);
+				
+				    		 temperatureWebSocket=ws;
+				    	 }
+				    	 else if(sensor=="smoke"){
+				    		 console.log("sensor="+sensor);
+				    		 ws=new WebSocket(wsServer+sensor+"/"+nodeName);
+				    		smokeWebSocket=ws;
+				    	 }
+		    	   		   
+
+			        	 ws.onopen = function()
+			      			{
+			      				  infoShow(panelId,"连接打开!");
+			      				  ws.send(sendDateStr)
+			      				  ws.send(value);
+			      				$("#"+panelId+" .closeBtn").attr("disabled",false);
+			      		    	$("#"+panelId+" .sendBtn").attr("disabled",false);
+			      		    	console.log(panelId);
+			      		    	console.log($("#"+panelId+" .sendBtn").attr("disabled"));
+			      			};
+			      			ws.onmessage = function(evt)
+			      				{
+			      				  infoShow(panelId,evt.data)
+			      				};
+			      				ws.onclose = function(evt)
+			      				{
+			      				  infoShow(panelId,"连接关闭!");
+			      				$(this).parent().find(".closeBtn").attr("disabled",true);
+				      		     $(this).attr("disabled",false);
+			      				};
+			      				ws.onerror = function(evt)
+			      				{
+			      				  errorShow("panelId","连接出错!");
+			      				  
+			      				$("#"+panelId+" .closeBtn").attr("disabled",true);
+			      		    	$("#"+panelId+" .sendBtn").attr("disabled",false);
+			      				};
+		    	   	   }
+		    	   	   else{
+		      				  ws.send(sendDateStr);
+		      				  ws.send(value);
+			      				$("#"+panelId+" .closeBtn").attr("disabled",false);
+			      		    	$("#"+panelId+" .sendBtn").attr("disabled",false);
+		    	   	   }
+		         
+		    });
+	      
+	     $("#imagePanel .closeBtn,#temperaturePanel .closeBtn,#smokePanel .closeBtn").click(function () {
+	    	 var sensor=$(this).parent().find("input[type=hidden]").val();
+	    	 var ws=null;
+	    	 if(sensor=="image"){
+	    		 ws=imageWebSocket;
+	    	 }
+	    	 else if(sensor=="tempearture"){
+	    		 ws=tempeatureWebSocket;
+	    	 }
+	    	 else if(sensor=="smoke"){
+	    		 ws=smokeWebSocket;
+	    	 }
+	    	 
+	    	 
+	    	 if(ws!=null&&ws.readyState!=WebSocket.CLOSED&&ws.readyState!=WebSocket.CLOSING){
+	    		ws.close();
+	    	 }
+	    	 $(this).attr("disabled",true);
+	    });
+	     
+});
+</script>
+<title>WebSocket测试</title>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header">
+			<h1>WebSocket网页端测试</h1>
+		</div>
+
+
+			<div id="imagePanel" class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">WebSocket图像传输</h3>
+				</div>
+				<div  style="display:none;"
+					class="msgError alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span>图像传输成功!</span>
+				</div>
+				<div style="display:none;" class="msgSuccess alert alert-warning alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span>图像传输失败！</span>
+				</div>
+				<div class="panel-body">
+					<form role="form">
+						<div class="form-group">
+						<input type="hidden" value="image"/>
+							<label for="nodeName">节点名称</label> <select id="imageNodeName"><option
+									value="node1">节点一</option>
+								<option value="node2">节点二</option>
+								<option value="node3">节点三</option>
+								<option value="node4">节点四</option>
+								<option value="node5">节点五</option></select>
+							<button type="button" disabled="disabled" class="closeBtn btn btn-primary">断开</button>
+							<button type="button" class="sendBtn btn btn-primary">发送</button>
+						</div>
+						<div class="form-group">
+							<label for="nodeImage">图像捕获</label><br />
+							<video id="webcam"  style="width:640px;height:auto;max-width:100%"></video>
+							<canvas id="canvas" style="max-width:100%"></canvas>
+						</div>
+
+					</form>
+				</div>
+			</div>
+			<div id="temperaturePanel" class="panel panel-info">
+				<div class="panel-heading">
+					<h3 class="panel-title">WebSocket温度传输</h3>
+				</div>
+								<div  style="display:none;"
+					class="msgError  alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span></span>
+				</div>
+				<div style="display:none;" class="msgSuccess  alert alert-warning alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span></span>
+				</div>
+				<div class="panel-body"><form role="form">
+						<div class="form-group form-inline">
+							<label for="nodeName">节点名称</label>
+							<input type="hidden" value="temperature"/>
+							<select id="temperatureNodeName"><option
+									value="node1">节点一</option>
+								<option value="node2">节点二</option>
+								<option value="node3">节点三</option>
+								<option value="node4">节点四</option>
+								<option value="node5">节点五</option></select>
+								<div class="form-group">
+								<code>温度值</code><input type="text" placeholder="请输入温度"/>
+								<code>℃</code></div>
+							<button type="button" disabled="disabled" class="closeBtn btn btn-info">断开</button>
+							<button type="button" class="sendBtn btn btn-info">发送</button>
+						</div>
+						</form></div>
+			</div>
+						<div id="smokePanel" class="panel panel-success">
+													
+				<div class="panel-heading">
+					<h3 class="panel-title">WebSocket烟雾传输</h3>
+				</div>
+				<div  style="display:none;"
+					class="msgError alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span></span>
+				</div>
+				<div style="display:none;" class="msgSuccess alert alert-warning alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<span></span>
+				</div>
+				<div class="panel-body">
+				<form role="form">
+						<div class="form-group form-inline">
+							<label for="nodeName">节点名称</label>
+							<input type="hidden" value="smoke"/>
+							<select id="smokeNodeName"><option
+									value="node1">节点一</option>
+								<option value="node2">节点二</option>
+								<option value="node3">节点三</option>
+								<option value="node4">节点四</option>
+								<option value="node5">节点五</option></select>
+								<div class="form-group">
+								<code>烟雾值</code>
+								<input type="text" placeholder="请输入烟雾"/>
+								<code>PPM</code></div>
+							<button  type="button" disabled="disabled" class="closeBtn btn btn-success">断开</button>
+							<button  type="button" class="sendBtn btn btn-success">发送</button>
+						</div>
+			
+						</form></div>
+			</div>
+	
+
+	</div>
+</body>
+</html>

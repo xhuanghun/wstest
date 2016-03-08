@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- <tx:advice id="txAdvice" transaction-manager="transactionManager"> 
+		<tx:attributes> <tx:method name="get*" read-only="true" /> <tx:method name="*" 
+		/> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="servicePointcut" 
+		expression="execution(* cn.cjtblog.service.*ServiceImpl.*(..))" /> <aop:advisor 
+		advice-ref="txAdvice" pointcut-ref="servicePointcut" /> </aop:config> -->
+	<context:property-placeholder location="jdbc.properties" />
+	<tx:annotation-driven />
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true" /> -->
+	<!-- services -->
+
+	<bean id="imageService" class="cn.cjtblog.service.ImageServiceImpl">
+		<property name="imageDAO" ref="imageDAO" />
+		<property name="nodeDAO" ref="nodeDAO" />
+	</bean>
+	<bean id="smokeService" class="cn.cjtblog.service.SmokeServiceImpl">
+		<property name="smokeDAO" ref="smokeDAO" />
+		<property name="nodeDAO" ref="nodeDAO" />
+	</bean>
+	<bean id="temperatureService" class="cn.cjtblog.service.TemperatureServiceImpl">
+		<property name="temperatureDAO" ref="temperatureDAO" />
+		<property name="nodeDAO" ref="nodeDAO" />
+	</bean>
+	<bean id="nodeService" class="cn.cjtblog.service.NodeServiceImpl">
+		<property name="nodeDAO" ref="nodeDAO" />
+	</bean>
+
+
+	<!-- jda dao -->
+	<bean id="imageDAO" class="cn.cjtblog.dao.jpaImpl.ImageDAOImpl" />
+	<bean id="nodeDAO" class="cn.cjtblog.dao.jpaImpl.NodeDAOImpl" />
+	<bean id="smokeDAO" class="cn.cjtblog.dao.jpaImpl.SmokeDAOImpl" />
+	<bean id="temperatureDAO" class="cn.cjtblog.dao.jpaImpl.TemperatureDAOImpl" />
+	<!-- Hibernate -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url"
+			value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceUnitName" value="cn.cjtblog.domain" />
+		<property name="packagesToScan" value="cn.cjtblog.domain" />
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<property name="jpaDialect" ref="jpaDialect" />
+
+		<property name="persistenceProvider" ref="persistenceProvider" />
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+
+	</bean>
+	<bean id="persistenceProvider" class="org.hibernate.jpa.HibernatePersistenceProvider" />
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="database" value="MYSQL" />
+		<property name="showSql" value="true" />
+	</bean>
+	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="jpaDialect" ref="jpaDialect" />
+	</bean>
+<!--hibernate dao -->
+	
+	<!-- <bean id="imageDAO" class="cn.cjtblog.dao.ImageDAOImpl"> <property 
+		name="sessionFactory" ref="sessionFactory"/> </bean> <bean id="nodeDAO" class="cn.cjtblog.dao.NodeDAOImpl"> 
+		<property name="sessionFactory" ref="sessionFactory"/> </bean> <bean id="smokeDAO" 
+		class="cn.cjtblog.dao.SmokeDAOImpl"> <property name="sessionFactory" ref="sessionFactory"/> 
+		</bean> <bean id="temperatureDAO" class="cn.cjtblog.dao.TemperatureDAOImpl"> 
+		<property name="sessionFactory" ref="sessionFactory"/> </bean> <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager"> 
+		<property name="sessionFactory" ref="sessionFactory"/> </bean> <bean id="sessionFactory" 
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" <property 
+		name="dataSource" ref="dataSource"/> <property name="packagesToScan"> <list> 
+		<value>cn/cjtblog/domain</value> </list> </property> <property name="hibernateProperties"> 
+		<value> hibernate.hbm2ddl.auto=create hibernate.show_sql=true hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect 
+		</value> </property> </bean> -->
+</beans>
