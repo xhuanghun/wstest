@@ -24,6 +24,16 @@
     <param-name>org.apache.tomcat.websocket.textBufferSize</param-name>
     <param-value>1024000</param-value>
   </context-param>
+   <!-- Spring配置 -->  
+    <listener>  
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
+    </listener>  
+  
+    <!-- 指定Spring Bean的配置文件所在目录。默认配置在WEB-INF目录下 -->  
+    <context-param>  
+        <param-name>contextConfigLocation</param-name>  
+        <param-value>WEB-INF/spring-rest.xml</param-value>  
+    </context-param>  
   
     <servlet>
     <servlet-name>ws</servlet-name>

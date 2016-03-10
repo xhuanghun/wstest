@@ -205,7 +205,7 @@ $(document).ready(function(){
 			      	
 			      		    	$("#"+panelId+" .sendBtn").attr("disabled",false);
 			      		    	console.log(panelId);
-			      		    	console.log($("#"+panelId+" .sendBtn").attr("disabled"));
+		
 			      			};
 			      			ws.onmessage = function(evt)
 			      				{
@@ -234,14 +234,14 @@ $(document).ready(function(){
 		         
 		    });
 	      
-	     $("#imagePanel .closeBtn,#temperaturePanel .closeBtn,#smokePanel .closeBtn").click(function () {
+	     $("#imagePanel .closeBtn, #temperaturePanel .closeBtn, #smokePanel .closeBtn").click(function () {
 	    	 var sensor=$(this).parent().find("input[type=hidden]").val();
 	    	 var ws=null;
 	    	 if(sensor=="image"){
 	    		 ws=imageWebSocket;
 	    	 }
-	    	 else if(sensor=="tempearture"){
-	    		 ws=tempeatureWebSocket;
+	    	 else if(sensor=="temperature"){
+	    		 ws=temperatureWebSocket;
 	    	 }
 	    	 else if(sensor=="smoke"){
 	    		 ws=smokeWebSocket;

@@ -4,15 +4,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringUtil {
-	private static ApplicationContext applicationContext=getInitContext();
+	private static ApplicationContext applicationContext;
 	public static <T> T getBean(Class<T> clz, String id){
 		return applicationContext.getBean(id, clz);
 	}
 	public static Object getBean(String id){
 		return applicationContext.getBean(id);
 	}
-	private static ApplicationContext getInitContext() {
+	public static void initContext(ApplicationContext context) {
 		// TODO Auto-generated method stub
-		ApplicationContext applicationContext=new ClassPathXmlApplicationContext("spring.xml");
-		return applicationContext;
+		applicationContext=context;
 	}}
