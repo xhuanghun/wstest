@@ -1,22 +1,15 @@
 package cn.cjtblog.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.cjtblog.dao.NodeDAO;
-import cn.cjtblog.dao.NodeDAOImpl;
 import cn.cjtblog.dao.SmokeDAO;
-import cn.cjtblog.dao.SmokeDAOImpl;
 import cn.cjtblog.domain.Node;
 import cn.cjtblog.domain.Smoke;
 import cn.cjtblog.util.BeanUtil;
@@ -45,8 +38,8 @@ public class SmokeServiceImpl implements SmokeService {
 
 
     @Override
-    public void addSmoke(String nodeName, String valueStr, String sendTimeStr) {
-        Node node = nodeDAO.getNodeByNodeName(nodeName);
+    public void addSmoke(Long nodeId, String valueStr, String sendTimeStr) {
+        Node node = nodeDAO.getById(nodeId);
         Map<String, Object> fieldMap=new HashMap<>();
         fieldMap.put("node", node);
         fieldMap.put("receiveTime",new Date());
@@ -57,22 +50,22 @@ public class SmokeServiceImpl implements SmokeService {
 
     @Override
     @Transactional(propagation=Propagation.REQUIRED,readOnly=true)
-    public Set<Smoke> getSmokeByNodeName(String nodeName) {
-        Node node = nodeDAO.getNodeByNodeName(nodeName);
-        return node.getSmokes();
+    public List<Smoke> getSmokesByNode(Long nodeId) {
+        Node node = nodeDAO.getById(nodeId);
+        return smokeDAO.getAllByNode(node);
     }
 
 	@Override
 	public void addSmoke(Map<String, Object> fieldMap) {
 		Smoke smoke=BeanUtil.createEntity(Smoke.class, fieldMap);
-		smokeDAO.addSmoke(smoke);		
+		smokeDAO.add(smoke);		
 	}
 
 	@Override
     @Transactional(propagation=Propagation.REQUIRED,readOnly=true)
 	public Smoke getSmokeById(long id) {
 		// TODO Auto-generated method stub
-		return smokeDAO.getSmokeById(id);
+		return smokeDAO.getById(id);
 	}
 
 }

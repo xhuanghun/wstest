@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<link href="css/bootstrap.css" rel="stylesheet" />
+<!-- [if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="js/jquery-1.12.0.js"></script>
+<script src="js/jquery.validate.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/util.js"></script>
+<script th:inline="javascript">
+	$(document).ready(
+			function() {
+				$("#nodeForm")
+						.validate(
+								{
+									rules : {
+										name : "required",
+										longitude : {
+											required : true,
+											number : true
+										},
+										latitude : {
+											required : true,
+											number : true
+										}
+									},
+									messages : {
+										name : "输入名称不能为空",
+										longitude : "请输入数字",
+										latitude : "请输入数字",
+									},
+									highlight : function(element, errorClass,
+											validClass) {
+										console.log(errorClass);
+										$(element).parents(".col-sm-8")
+												.addClass("has-error")
+												.removeClass("has-success");
+									},
+									unhighlight : function(element, errorClass,
+											validClass) {
+										console.log(errorClass);
+										$(element).parents(".col-sm-8")
+												.addClass("has-success")
+												.removeClass("has-error");
+									},
+									errorElement: "label",
+									errorPlacement: function ( error, element ) {
+
+										error.addClass( "control-label" );
+										error.insertAfter( element );
+
+									},
+								});
+				if (navigator.geolocation) {
+					var watchId = navigator.geolocation.watchPosition(
+							function success(pos) {
+								var longitude = pos.coords.longitude;
+								var latitude = pos.coords.latitude;
+								$(".msgInfo").show().find("span").text(
+										"当前所在经度:" + longitude + ";所在纬度:"
+												+ latitude);
+								$("[name=longitude]").val(longitude);
+								$("[name=latitude]").val(latitude);
+							}, function error(e) {
+								navigator.geolocation.clearWatch(watchId);
+								$(".msgInfo").show().find("span").text(
+										"无法获得当前所在位置!");
+							}, {
+								timeout : 2000
+							});
+				}
+
+			});
+</script>
+<title>增加监控节点</title>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header">
+			<h2>
+				REST测试<small style="float: right;"><a class="btn btn-info"
+					href="index.htm">返回节点列表</a></small>
+			</h2>
+		</div>
+
+		<div class="panel panel-info">
+
+			<div class="panel-heading">添加监控节点</div>
+
+			<div style="display: none;"
+				class="msgInfo alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<span>图像传输成功!</span>
+			</div>
+			<div class="panel-body">
+				<form id="nodeForm" action="addNode.htm" method="post"
+					class="form-horizontal">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">节点名称</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" name="name"
+									placeholder="请输入监控节点名称" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">节点经度</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" name="longitude"
+									placeholder="请输入监控节点经度" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">节点纬度</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" name="latitude"
+									placeholder="请输入监控节点纬度" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">节点描述</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" name="description"
+									placeholder="请输入监控节点描述" />
+							</div>
+						</div>
+						<div class="form-group has-warning msg" style="display: none;">
+							<div class="col-sm-4"></div>
+							<label class="col-sm-8 control-label">输入格式有误</label>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-8">
+								<button id="resetBtn" type="reset" class="btn btn-info">重置</button>
+								<button id="createBtn" type="submit" class="btn btn-info">创建</button>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

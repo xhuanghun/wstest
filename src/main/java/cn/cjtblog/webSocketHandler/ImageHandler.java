@@ -17,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import cn.cjtblog.service.ImageService;
 import cn.cjtblog.util.SpringUtil;
@@ -25,7 +26,7 @@ import cn.cjtblog.util.SpringUtil;
  *
  * @author cai
  */
-@ServerEndpoint("/image/{nodeName}")
+@ServerEndpoint("/image/{nodeId}")
 public class ImageHandler {
 
 	private static Logger log = LoggerFactory.getLogger(ImageHandler.class);
@@ -34,23 +35,20 @@ public class ImageHandler {
 	private String sendTimeStr;
 
 	@OnOpen
-	public void onOpen(Session session, EndpointConfig config, @PathParam("nodeName") String nodeName) {
-		log.info("nodeName : " + nodeName);
-		log.info(config.getDecoders().toString());
-		log.info(config.getEncoders().toString());
-		log.info(config.getUserProperties().toString());
+	public void onOpen(Session session, EndpointConfig config, @PathParam("nodeId") Long nodeId) {
+		log.info("nodeId : " + nodeId);
 	}
 
 	@OnMessage
-	public void textMessage(Session session, String msg, @PathParam("nodeName") String nodeName) {
-		log.info("nodeName : " + nodeName);
+	public void textMessage(Session session, String msg, @PathParam("nodeId") Long nodeId) {
+		log.info("nodeName : " + nodeId);
 		sendTimeStr = msg;
 	}
 
 	@OnMessage
-	public void binaryMessage(Session session, ByteBuffer msg, @PathParam("nodeName") String nodeName) {
+	public void binaryMessage(Session session, ByteBuffer msg, @PathParam("nodeId") Long nodeId) {
 		byte[] bytes = msg.array();
-		imageService.addImage(nodeName, bytes, sendTimeStr);
+		imageService.addImage(nodeId, bytes, sendTimeStr);
 
 	}
 
@@ -62,7 +60,6 @@ public class ImageHandler {
 	@OnClose
 	public void onClose(Session session, CloseReason reason) {
 		log.info("onClose");
-		System.out.println("onclose");
 		log.info(reason.toString());
 	}
 

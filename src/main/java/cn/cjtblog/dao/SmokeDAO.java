@@ -2,6 +2,7 @@ package cn.cjtblog.dao;
 
 import java.util.List;
 
+import cn.cjtblog.domain.Image;
 import cn.cjtblog.domain.Node;
 import cn.cjtblog.domain.Smoke;
 
@@ -11,13 +12,14 @@ import cn.cjtblog.domain.Smoke;
  */
 public interface SmokeDAO {
 
-    public void addSmoke(Smoke smoke);
+    public void add(Smoke smoke);
 
-    public List<Smoke> getAllSmokes();
+    public List<Smoke> getAll();
 
-    public void deleteSmoke(Smoke smoke);
+    public void delete(Smoke smoke);
 
-    public Smoke getNewestSmokeByNode(Node node);
+    public Smoke getNewestByNode(Node node);
 
-	public Smoke getSmokeById(long id);
+	public Smoke getById(long id);
+	public List<Smoke> getAllByNode(Node node);
 }

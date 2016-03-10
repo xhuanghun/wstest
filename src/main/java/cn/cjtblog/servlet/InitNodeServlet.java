@@ -24,14 +24,12 @@ import cn.cjtblog.util.SpringUtil;
 @WebServlet(name="/InitNodeServlet",urlPatterns={"/initNodeServlet"},loadOnStartup=1)
 public class InitNodeServlet extends HttpServlet {
 	private static Logger logger=LoggerFactory.getLogger(InitNodeServlet.class);
-	// 初始化数据
+	// 鍒濆鍖栨暟鎹紝鏂逛究娴嬭瘯
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		// TODO Auto-generated method stub
-		super.init(config);
-		
+		super.init(config);	
 		NodeService nodeService=(NodeService)SpringUtil.getBean("nodeService");
-		logger.info(nodeService.getClass().toString()+":"+System.getProperty("IOTWebSocket.root"));
 		if(nodeService.getAllNodes()!=null&&nodeService.getAllNodes().size()>0)
 		{
 			return;
@@ -40,7 +38,8 @@ public class InitNodeServlet extends HttpServlet {
 			Map<String,Object> fieldMap=new HashMap<>();
 			fieldMap.put("nodeName", "node"+i);
 			fieldMap.put("latitude", 120);
-			fieldMap.put("longitude", 120);
+			fieldMap.put("longitude", 20);
+			fieldMap.put("description", "鑺傜偣娴嬭瘯鎻忚堪");
 			nodeService.addNode(fieldMap);
 			logger.info("adding node"+"node"+i);
 		}

@@ -3,17 +3,19 @@ package cn.cjtblog.dao;
 import java.util.List;
 
 import cn.cjtblog.domain.Node;
+import cn.cjtblog.domain.Smoke;
 import cn.cjtblog.domain.Temperature;
 
 public interface TemperatureDAO {
 
-    public void addTemperature(Temperature temperature);
+    public void add(Temperature temperature);
 
-    public List<Temperature> getAllTemperatures();
+    public List<Temperature> getAll();
 
-    public void deleteTemperature(Temperature temperature);
+    public void delete(Temperature temperature);
 
-    public Temperature getNewestTempertuareByNode(Node node);
+    public Temperature getNewestByNode(Node node);
 
-	public Temperature getTemmperatureById(long id);
+	public Temperature getById(long id);
+	public List<Temperature> getAllByNode(Node node);
 }

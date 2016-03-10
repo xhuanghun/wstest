@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -12,6 +13,8 @@
         http://www.springframework.org/schema/tx/spring-tx.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/websocket
         http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 	<!-- <tx:advice id="txAdvice" transaction-manager="transactionManager"> 
@@ -19,7 +22,11 @@
 		/> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="servicePointcut" 
 		expression="execution(* cn.cjtblog.service.*ServiceImpl.*(..))" /> <aop:advisor 
 		advice-ref="txAdvice" pointcut-ref="servicePointcut" /> </aop:config> -->
-	<context:property-placeholder location="jdbc.properties" />
+	<context:property-placeholder location="/WEB-INF/jdbc.properties" />
+	<context:component-scan base-package="cn.cjtblog"/>
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
+	<mvc:annotation-driven />
 	<tx:annotation-driven />
 	
 	  <websocket:handlers>
@@ -108,4 +115,28 @@
 		<value>cn/cjtblog/domain</value> </list> </property> <property name="hibernateProperties"> 
 		<value> hibernate.hbm2ddl.auto=create hibernate.show_sql=true hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect 
 		</value> </property> </bean> -->
+		
+<bean id="templateResolver"
+        class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+    <property name="prefix" value="/WEB-INF/templates/" />
+    <property name="suffix" value=".html" />
+    <property name="templateMode" value="HTML5" />
+    <!-- Template cache is true by default. Set to false if you want -->
+    <!-- templates to be automatically updated when modified.        -->
+    <property name="cacheable" value="false" />
+  </bean>
+    
+  <bean id="templateEngine"
+        class="org.thymeleaf.spring4.SpringTemplateEngine">
+    <property name="templateResolver" ref="templateResolver" />
+  </bean>
+   
+  <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+    <property name="templateEngine" ref="templateEngine" />
+    <property name="characterEncoding" value="UTF-8"/>
+  </bean>    
+   
+
+		
+		
 </beans>

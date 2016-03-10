@@ -22,7 +22,7 @@ public class JPATest {
 			fieldMap.put("nodeName", "node"+i);
 			fieldMap.put("latitude", 120);
 			fieldMap.put("longtitude", 120);
-			nodeDAO.addNode(BeanUtil.createEntity(Node.class, fieldMap));
+			nodeDAO.add(BeanUtil.createEntity(Node.class, fieldMap));
 			System.out.println("adding");
 		}
 

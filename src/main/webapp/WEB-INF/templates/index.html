@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<link href="css/bootstrap.css" rel="stylesheet" />
+<!-- [if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="js/jquery-1.12.0.js"></script>
+<script src="js/jquery.validate.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/util.js"></script>
+<title>节点列表</title>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header">
+			<h1>WebSocket网页端测试</h1>
+		</div>
+
+		<div class="panel panel-info">
+
+			<div class="panel-heading clearfix">
+				<h3 class="panel-title">
+					监控节点列表<span style="float: right;"><a href="addNode.htm" 
+						class="btn btn-danger">创建节点</a>&nbsp;<a href="addData.htm"
+						class="btn btn-primary">测试数据</a></span>
+				</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table 
+						class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>节点ID</th>
+								<th>节点名称</th>
+								<th>节点经度</th>
+								<th>节点纬度</th>
+								<th>具体描述</th>
+							</tr>
+						</thead>
+						<tbody>
+            <tr th:each="node : ${nodes}">
+                <td th:text="${node.id}">1</td>
+    				<td th:text="${node.name}">节点1</td>
+    				<td th:text="${node.longitude}">120</td>
+    				<td th:text="${node.latitude}">31</td>
+    				<td th:text="${node.description}">节点描述</td>
+            </tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+<!-- modal -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title">模态框（Modal）标题</h4>
+					</div>
+					<div class="modal-body">				<div class="progress progress-striped active">
+					<div class="progress-bar" role="progressbar" style="width: 100%;">
+					</div>
+				</div></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">关闭
+						</button>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<!-- modal -->
+	</div>
+
+
+	
+
+</body>
+</html>

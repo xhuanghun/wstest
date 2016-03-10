@@ -9,6 +9,6 @@ public interface NodeService {
 	void addNode(Node node);
 	List<Node> getAllNodes();
 	void addNode(Map<String, Object> fieldMap);
-	Node getNodeByName(String string);
+	Node getNodeById(Long nodeId);
 	void updateNode(Node node);
 }

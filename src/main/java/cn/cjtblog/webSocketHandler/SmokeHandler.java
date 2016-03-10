@@ -17,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import cn.cjtblog.service.SmokeService;
 import cn.cjtblog.util.SpringUtil;
@@ -25,23 +26,22 @@ import cn.cjtblog.util.SpringUtil;
  *
  * @author cai
  */
-@ServerEndpoint("/smoke/{nodeName}")
+@ServerEndpoint("/smoke/{nodeId}")
 public class SmokeHandler {
 	private static Logger logger = LoggerFactory.getLogger(SmokeHandler.class);
    
     private  SmokeService smokeService =  (SmokeService) SpringUtil.getBean("smokeService");
     private String sendTimeStr;
     private String valueStr;
-    private String nodeName;
     private int receivePhase=0;
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config,@PathParam("nodeName")String nodeName) {
-    	logger.info("nodeName : "+nodeName);
-        this.nodeName=nodeName;
+    public void onOpen(Session session, EndpointConfig config,@PathParam("nodeId")Long nodeId) {
+    	logger.info("nodeId : "+nodeId);
+
     }
 
     @OnMessage
-    public void textMessage(Session session, String msg) {
+    public void textMessage(Session session, String msg,@PathParam("nodeId")Long nodeId) {
     	logger.info("msg :"+msg);
         if(receivePhase==0){
             sendTimeStr=msg;
@@ -49,7 +49,7 @@ public class SmokeHandler {
         }
         else{
             valueStr=msg;
-            smokeService.addSmoke(nodeName, valueStr, sendTimeStr);
+            smokeService.addSmoke(nodeId, valueStr, sendTimeStr);
             logger.info("handle success");
             receivePhase=0;
         }

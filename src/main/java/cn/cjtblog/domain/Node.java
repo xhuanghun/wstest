@@ -25,32 +25,17 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "t_node")
-public class Node {
-
-
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
-
-
-	private String nodeName;
+public class Node extends BaseEntity{
+	private String name;
     private double longitude;
     private double latitude;
+    private String description;
     @OneToMany(mappedBy="node")
     private Set<Image> images=new HashSet<>();
     @OneToMany(mappedBy="node")
     private Set<Temperature> temperatures=new HashSet<>();
     @OneToMany(mappedBy="node",fetch=FetchType.EAGER)
     private Set<Smoke> smokes=new HashSet<>();
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public double getLongitude() {
         return longitude;
     }
@@ -69,12 +54,12 @@ public class Node {
 
 
 
-    public String getNodeName() {
-        return nodeName;
+    public String getName() {
+        return name;
     }
 
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<Image> getImages() {
@@ -101,11 +86,14 @@ public class Node {
         this.smokes = smokes;
     }
 
-	@Override
-	public String toString() {
-		return "Node [id=" + id + ", nodeName=" + nodeName + ", longitude=" + longitude + ", latitude=" + latitude
-				+ "]";
+	public String getDescription() {
+		return description;
 	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 
 
     

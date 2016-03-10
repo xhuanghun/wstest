@@ -1,11 +1,9 @@
 package cn.cjtblog.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +28,13 @@ public class ImageServiceImpl implements ImageService {
 	private static Logger logger=LoggerFactory.getLogger(ImageServiceImpl.class);
     private ImageDAO imageDAO;
     private NodeDAO nodeDAO;
-    private  SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+
 
     @Override
-    public void addImage(String nodeName, byte[] bytes, String sendTimeStr) {
-        Image image = new Image();
-        Node node = nodeDAO.getNodeByNodeName(nodeName);
+    public void addImage(Long nodeId, byte[] bytes, String sendTimeStr) {
+        Node node = nodeDAO.getById(nodeId);
         if(node==null){
-        	logger.warn("receive an unknow node: "+nodeName+" image");
+        	logger.warn("receive an unknow node: nodeId="+nodeId+" image");
         	return ;
         }
         Map<String, Object> fieldMap=new HashMap<>();
@@ -45,14 +42,14 @@ public class ImageServiceImpl implements ImageService {
         fieldMap.put("sendTime", sendTimeStr);
         Date receiveTime =new Date();
         fieldMap.put("receiveTime",receiveTime);
-        fieldMap.put("savePath", Image.SAVEIMAGEDIR+nodeName+"/" +receiveTime.getTime()+Image.SUFFIX);
-        addImage(bytes,fieldMap);
+        String URL=Image.IMAGEBASICURL+nodeId+"/" +receiveTime.getTime()+Image.SUFFIX;
+        fieldMap.put("URL", URL);
+        FileUtil.saveFile(Image.SAVEIMAGEDIR+URL, bytes);
+        addImage(fieldMap);
     }
-     public void addImage(byte[] bytes, Map<String, Object> fieldMap) {
+     public void addImage( Map<String, Object> fieldMap) {
     	 Image image=BeanUtil.createEntity(Image.class, fieldMap);
-    	 imageDAO.addImage(image);
-         String fileFullName = image.getSavePath();
-         FileUtil.saveFile(fileFullName, bytes);
+    	 imageDAO.add(image);
 	}
 	public ImageDAO getImageDAO() {
 		return imageDAO;
@@ -68,15 +65,16 @@ public class ImageServiceImpl implements ImageService {
 	}
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED,readOnly=true)
-    public Set<Image> getImageByNodeName(String nodeName) {
-        Node node = nodeDAO.getNodeByNodeName(nodeName);
-        return node.getImages();
+    public List<Image> getImageByNodeId(Long nodeId) {
+        Node node = nodeDAO.getById(nodeId);
+        return imageDAO.getAllByNode(node);
     }
 
 	@Override
 	public Image getImageById(long id) {
 		// TODO Auto-generated method stub
-		return imageDAO.getImageById(id);
+		return imageDAO.getById(id);
 	}
+
    
 }

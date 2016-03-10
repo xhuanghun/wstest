@@ -23,16 +23,16 @@ public class NodeServiceImpl implements NodeService {
 	}
 	@Override
 	public void addNode(Node node) {
-        FileUtil.makeDir(node.getNodeName());
-		nodeDAO.addNode(node);
+        FileUtil.makeDir(node.getId());
+		nodeDAO.add(node);
 		
 	}
 
 	@Override
 	public void addNode(Map<String, Object> fieldMap) {
 		Node node=BeanUtil.createEntity(Node.class, fieldMap);
-        FileUtil.makeDir(node.getNodeName());
-		nodeDAO.addNode(node);
+        FileUtil.makeDir(node.getId());
+		nodeDAO.add(node);
 		
 	}
 
@@ -40,20 +40,20 @@ public class NodeServiceImpl implements NodeService {
 	@Transactional(propagation=Propagation.REQUIRED,readOnly=true)
 	public List<Node> getAllNodes() {
 		// TODO Auto-generated method stub
-		return nodeDAO.getAllNodes();
+		return nodeDAO.getAll();
 	}
 
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED,readOnly=true)
-	public Node getNodeByName(String nodeName) {
+	public Node getNodeById(Long nodeId) {
 		// TODO Auto-generated method stub
-		return nodeDAO.getNodeByNodeName(nodeName);
+		return nodeDAO.getById(nodeId);
 	}
 
 	@Override
 	public void updateNode(Node node) {
 		// TODO Auto-generated method stub
-		nodeDAO.updateNode(node);
+		nodeDAO.update(node);
 	}
 
 }

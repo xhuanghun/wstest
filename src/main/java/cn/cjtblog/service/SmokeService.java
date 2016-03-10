@@ -1,9 +1,8 @@
 package cn.cjtblog.service;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import cn.cjtblog.domain.Node;
 import cn.cjtblog.domain.Smoke;
 
 /**
@@ -12,9 +11,9 @@ import cn.cjtblog.domain.Smoke;
  */
 public interface SmokeService {
 
-    public void addSmoke(String nodeName, String valueStr, String sendTimeStr);
+    public void addSmoke(Long nodeId, String valueStr, String sendTimeStr);
 
-    public Set<Smoke> getSmokeByNodeName(String nodeName);
+    public List<Smoke> getSmokesByNode(Long nodeId);
 
 	public void addSmoke(Map<String, Object> fieldMap);
 

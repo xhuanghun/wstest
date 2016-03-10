@@ -14,43 +14,14 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "t_temperature")
-public class Temperature {
+public class Temperature extends SensorData{
 
-    public final static String UNIT ="…„ œ∂»";
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date sendTime;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date receiveTime;
+    public final static String UNIT ="‚ÑÉ";
+	
     private double value;
-    @ManyToOne
-    private Node node;
+  
 
-    public long getId() {
-        return id;
-    }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Date getSendTime() {
-        return sendTime;
-    }
-
-    public void setSendTime(Date sendTime) {
-        this.sendTime = sendTime;
-    }
-
-    public Date getReceiveTime() {
-        return receiveTime;
-    }
-
-    public void setReceiveTime(Date receiveTime) {
-        this.receiveTime = receiveTime;
-    }
 
     public double getValue() {
         return value;
@@ -60,11 +31,5 @@ public class Temperature {
         this.value = value;
     }
 
-    public Node getNode() {
-        return node;
-    }
 
-    public void setNode(Node node) {
-        this.node = node;
-    }
 }

@@ -9,10 +9,9 @@ import cn.cjtblog.domain.Node;
  * @author cai
  */
 public interface NodeDAO {
-    	public void addNode(Node node);
-        public void updateNode(Node node);
-        public Node getNodeByNodeName(String nodeName);
-	public List<Node> getAllNodes();
-	public void deleteNode(Node node);
-        
+    	public void add(Node node);
+        public void update(Node node);
+        public Node getById(long id);
+	public List<Node> getAll();
+	public void delete(Node node);
 }

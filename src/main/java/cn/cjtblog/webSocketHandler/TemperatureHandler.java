@@ -26,24 +26,21 @@ import cn.cjtblog.util.SpringUtil;
  *
  * @author cai
  */
-@ServerEndpoint("/temperature/{nodeName}")
+@ServerEndpoint("/temperature/{nodeId}")
 public class TemperatureHandler {
 	private static Logger logger = LoggerFactory.getLogger(TemperatureHandler.class);
 	private TemperatureService temperatureService = (TemperatureService) SpringUtil.getBean("temperatureService");
 	private String sendTimeStr;
 	private String valueStr;
-	private String nodeName;
 	private int receivePhase = 0;
-	private Map<String, Object> fieldMap = new HashMap<>();
 
 	@OnOpen
-	public void onOpen(Session session, EndpointConfig config, @PathParam("nodeName") String nodeName) {
-		logger.info("nodeName : " + nodeName);
-		this.nodeName = nodeName;
+	public void onOpen(Session session, EndpointConfig config,@PathParam("nodeId")Long nodeId)  {
+		logger.info("nodeName : " + nodeId);
 	}
 
 	@OnMessage
-	public void textMessage(Session session, String msg) {
+	public void textMessage(Session session, String msg,@PathParam("nodeId")Long nodeId) {
 		logger.info("msg" + msg);
 		if (receivePhase == 0) {
 
@@ -52,7 +49,7 @@ public class TemperatureHandler {
 		} else {
 			valueStr = msg;
 
-			temperatureService.addTemperature(nodeName, valueStr, sendTimeStr);
+			temperatureService.addTemperature(nodeId, valueStr, sendTimeStr);
 			logger.info("handle success");
 			receivePhase = 0;
 		}
@@ -60,7 +57,7 @@ public class TemperatureHandler {
 
 	@OnMessage
 	public void pongMessage(Session session, PongMessage msg) {
-		System.out.println("Pong message: " + msg.getApplicationData().toString());
+		logger.error("Pong message: " + msg.getApplicationData().toString());
 		throw new UnsupportedOperationException("can't handle pongMessage");
 	}
 

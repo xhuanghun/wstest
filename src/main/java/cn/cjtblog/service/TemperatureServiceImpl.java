@@ -1,9 +1,8 @@
 package cn.cjtblog.service;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +39,8 @@ public class TemperatureServiceImpl implements TemperatureService {
 
 
     @Override
-    public void addTemperature(String nodeName, String valueStr, String sendTimeStr) {
-        Node node = nodeDAO.getNodeByNodeName(nodeName);     
+    public void addTemperature(Long nodeId, String valueStr, String sendTimeStr) {
+        Node node = nodeDAO.getById(nodeId);     
         Map<String,Object> fieldMap=new HashMap<>();
         fieldMap.put("node", node);
         fieldMap.put("receiveTime", new Date());
@@ -55,15 +54,15 @@ public class TemperatureServiceImpl implements TemperatureService {
 
     @Override
     @Transactional(propagation=Propagation.REQUIRED,readOnly=true)
-    public Set<Temperature> getTemperatureByNodeName(String nodeName) {
-        Node node = nodeDAO.getNodeByNodeName(nodeName);
-        return node.getTemperatures();
+    public List<Temperature> getTemperaturesByNode(Long nodeId) {
+        Node node = nodeDAO.getById(nodeId);
+        return temperatureDAO.getAllByNode(node);
     }
 
 	@Override
 	public void addTemperature(Map<String, Object> fieldMap) {
 		Temperature temperature=BeanUtil.createEntity(Temperature.class, fieldMap);
-		temperatureDAO.addTemperature(temperature);
+		temperatureDAO.add(temperature);
 		
 	}
 
@@ -71,7 +70,7 @@ public class TemperatureServiceImpl implements TemperatureService {
 	@Transactional(propagation=Propagation.REQUIRED,readOnly=true)
 	public Temperature getTemperatureById(long id) {
 		// TODO Auto-generated method stub
-		return temperatureDAO.getTemmperatureById(id);
+		return temperatureDAO.getById(id);
 	}
 
 }

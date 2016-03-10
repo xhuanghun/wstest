@@ -19,7 +19,7 @@
 		/> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="servicePointcut" 
 		expression="execution(* cn.cjtblog.service.*ServiceImpl.*(..))" /> <aop:advisor 
 		advice-ref="txAdvice" pointcut-ref="servicePointcut" /> </aop:config> -->
-	<context:property-placeholder location="jdbc.properties" />
+	<context:property-placeholder location="/WEB-INF/jdbc.properties" />
 	<tx:annotation-driven />
 	
 	  <websocket:handlers>
@@ -108,4 +108,27 @@
 		<value>cn/cjtblog/domain</value> </list> </property> <property name="hibernateProperties"> 
 		<value> hibernate.hbm2ddl.auto=create hibernate.show_sql=true hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect 
 		</value> </property> </bean> -->
+		
+<bean id="templateResolver"
+        class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+    <property name="prefix" value="/WEB-INF/templates/" />
+    <property name="suffix" value=".html" />
+    <property name="templateMode" value="HTML5" />
+    <!-- Template cache is true by default. Set to false if you want -->
+    <!-- templates to be automatically updated when modified.        -->
+    <property name="cacheable" value="true" />
+  </bean>
+    
+  <bean id="templateEngine"
+        class="org.thymeleaf.spring4.SpringTemplateEngine">
+    <property name="templateResolver" ref="templateResolver" />
+  </bean>
+   
+  <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+    <property name="templateEngine" ref="templateEngine" />
+  </bean>    
+   
+
+		
+		
 </beans>
