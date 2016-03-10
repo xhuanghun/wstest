@@ -24,12 +24,6 @@ public class HtmlController {
 	@Autowired
 	private NodeService nodeService;
 	
-	@RequestMapping(value="/footer.htm", method = RequestMethod.GET)
-	String getFooter(Model model) {
-		logger.info("gettingfooter");
-		return "footer";
-	}
-
 
 	@RequestMapping(value="/addNode.htm", method = RequestMethod.GET)
 	String addNode(Model model) {
