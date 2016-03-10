@@ -23,16 +23,17 @@ public class NodeServiceImpl implements NodeService {
 	}
 	@Override
 	public void addNode(Node node) {
-        FileUtil.makeDir(node.getId());
+
 		nodeDAO.add(node);
-		
+        FileUtil.makeDir(node.getId());
 	}
 
 	@Override
 	public void addNode(Map<String, Object> fieldMap) {
 		Node node=BeanUtil.createEntity(Node.class, fieldMap);
-        FileUtil.makeDir(node.getId());
+
 		nodeDAO.add(node);
+        FileUtil.makeDir(node.getId());
 		
 	}
 
