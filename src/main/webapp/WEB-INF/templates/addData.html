@@ -119,6 +119,10 @@ $(document).ready(function(){
 		      				  infoShow("imagePanel","连接打开");
 		      				  imageWebSocket.send(sendDateStr)
 		      				  imageWebSocket.send(b);
+	
+		      				$("#imagePanel select").attr("disabled","disabled");
+		      				console.log("disabled");
+		      				console.log($("#imagePanel select"));
 		      				$("#imagePanel .closeBtn").attr("disabled",false);
 		      		    	$("#imagePanel .sendBtn").attr("disabled",false);
 		      			};
@@ -130,13 +134,14 @@ $(document).ready(function(){
 		      				{
 		      				  infoShow("imagePanel","连接关闭!");
 		      				$(this).parent().find(".closeBtn").attr("disabled",true);
-		      				$(this).parent().parent("select").attr("disabled",true);
+		      				$("#imagePanel select").removeAttr("disabled");
 			      		     $(this).attr("disabled",false);
 		      				};
 		      				imageWebSocket.onerror = function(evt)
 		      				{
 		      				  errorShow("imagePanel","连接出错!");
 		      				$("#imagePanel .closeBtn").attr("disabled",true);
+		      				$("#imagePanel select").removeAttr("disabled");
 		      				$("#imagePanel .sendBtn").attr("disabled",false);
 		      				};
 	    	   	   }
@@ -214,13 +219,14 @@ $(document).ready(function(){
 			      				ws.onclose = function(evt)
 			      				{
 			      				  infoShow(panelId,"连接关闭!");
+			      				$("#"+panelId+" select").removeAttr("disabled");
 			      				$(this).parent().find(".closeBtn").attr("disabled",true);
 				      		     $(this).attr("disabled",false);
 			      				};
 			      				ws.onerror = function(evt)
 			      				{
 			      				  errorShow("panelId","连接出错!");
-			      				  
+			      				$("#"+panelId+" select").removeAttr("disabled");
 			      				$("#"+panelId+" .closeBtn").attr("disabled",true);
 			      		    	$("#"+panelId+" .sendBtn").attr("disabled",false);
 			      				};
