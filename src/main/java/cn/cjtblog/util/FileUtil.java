@@ -17,7 +17,7 @@ public class FileUtil {
 	}
 
 	public static void makeDir(long nodeId) {
-		File dir = new File(Image.SAVEIMAGEDIR + nodeId);
+		File dir = new File(Image.SAVEIMAGEDIR +"/"+Image.IMAGEBASICURL+ nodeId);
 		if (dir.exists()) {
 			logger.info(dir.getAbsolutePath() + " is exist");
 			return;
@@ -36,6 +36,7 @@ public class FileUtil {
 
 	public static void saveFile(String fileFullName, byte[] bytes) {
 		File file = new File(fileFullName);
+		logger.info(fileFullName);
 		if (file.exists()) {
 			logger.info("file has exitst");
 			return;
@@ -44,7 +45,7 @@ public class FileUtil {
 			file.createNewFile();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("ioexceptio",e);
+			logger.error("ioexceptio"+fileFullName,e);
 			return;
 		}
 		try (FileOutputStream fileOutput = new FileOutputStream(file)) {
